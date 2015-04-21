@@ -88,6 +88,10 @@ Describe -Name 'nService.TestTargetResource' -Tags 'UnitTests' -Fixture {
     It 'Test if Invoke-DscResource returns results as expected' -Pending {
     
     }
+
+    It 'Test if validate set works' {
+        {Test-TargetResourceHelper -Name $script:TestService -State 'InvalidState'} | Should Throw
+    }
 }
 
 Describe 'nService.SetTargetResource' -Tags 'UnitTests' {

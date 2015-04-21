@@ -161,7 +161,6 @@ function Test-TargetResourceHelper
 	[OutputType([System.Boolean])]
 	param
 	(
-		[ValidateSet('Automatic','Manual','Disabled')]
 		[System.String]
 		$StartupType,
 
@@ -170,7 +169,6 @@ function Test-TargetResourceHelper
 		$Name,
 
 		[parameter(Mandatory = $true)]
-		[ValidateSet('Running','Stopped')]
 		[System.String]
 		$State
 	)
@@ -192,7 +190,6 @@ function Set-TargetResourceHelper
 	[CmdletBinding()]
 	param
 	(
-		[ValidateSet('Automatic','Manual','Disabled')]
 		[System.String]
 		$StartupType,
 
@@ -201,7 +198,6 @@ function Set-TargetResourceHelper
 		$Name,
 
 		[parameter(Mandatory = $true)]
-		[ValidateSet('Running','Stopped')]
 		[System.String]
 		$State
 	)
@@ -229,7 +225,6 @@ function Get-TargetResourceHelper
 		$Name,
 
 		[parameter(Mandatory = $true)]
-		[ValidateSet('Running','Stopped')]
 		[System.String]
 		$State
 	)
