@@ -2,22 +2,28 @@
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.", ".")
 . "$here\$sut"
 
+$script:TestService = 'w3svc'
+if ((Get-CimInstance win32_operatingsystem).ProductType -eq 1)
+{
+  $script:TestService = 'HomeGroupListener'
+}
+
 Describe -Name 'nService.TestTargetResource' -Tags 'UnitTests' -Fixture {
    
-    BeforeAll {Set-Service 'w3svc' -StartupType Manual}
-    AfterAll  {Set-Service 'w3svc' -StartupType Manual}
+    BeforeAll {Set-Service $script:TestService -StartupType Manual}
+    AfterAll  {Set-Service $script:TestService -StartupType Manual}
 
     It 'Tests w3svc service as running' {
-        $Name = 'w3svc'
+        $Name = $script:TestService
         Start-Service $Name
         Test-TargetResourceHelper -Name $name -State 'Running' | Should Be $true
     }
 
     $TestCases = @(
-        @{Name = 'w3svc'; State = 'Running'; CompareState = 'Running'; ExpectedResult = $true},
-        @{Name = 'w3svc'; State = 'Running'; CompareState = 'Stopped'; ExpectedResult = $false},
-        @{Name = 'w3svc'; State = 'Stopped'; CompareState = 'Running'; ExpectedResult = $false},
-        @{Name = 'w3svc'; State = 'Stopped'; CompareState = 'Stopped'; ExpectedResult = $true}
+        @{Name = $script:TestService; State = 'Running'; CompareState = 'Running'; ExpectedResult = $true},
+        @{Name = $script:TestService; State = 'Running'; CompareState = 'Stopped'; ExpectedResult = $false},
+        @{Name = $script:TestService; State = 'Stopped'; CompareState = 'Running'; ExpectedResult = $false},
+        @{Name = $script:TestService; State = 'Stopped'; CompareState = 'Stopped'; ExpectedResult = $true}
     )
 
     It 'Tests if service <Name> is in state <CompareState> when actual state is <State>' -TestCases $TestCases {
@@ -36,8 +42,8 @@ Describe -Name 'nService.TestTargetResource' -Tags 'UnitTests' -Fixture {
     }
 
     $TestCases = @(
-        @{Name = 'w3svc'; State = 'Running'; StartupType = 'Disabled'},
-        @{Name = 'w3svc'; State = 'Stopped'; StartupType = 'Automatic'}
+        @{Name = $script:TestService; State = 'Running'; StartupType = 'Disabled'},
+        @{Name = $script:TestService; State = 'Stopped'; StartupType = 'Automatic'}
     )
 
     It 'Tests if State is <State> and StartupType is <StartupType>' -TestCases $TestCases {
@@ -47,13 +53,13 @@ Describe -Name 'nService.TestTargetResource' -Tags 'UnitTests' -Fixture {
     }
 
     $TestCases = @(
-        @{Name = 'w3svc'; State = 'Stopped'; ST = 'Disabled';   TestST = 'Disabled'; Expected = $true},
-        @{Name = 'w3svc'; State = 'Stopped'; ST = 'Automatic';  TestST = 'Disabled'; Expected = $false},
-        @{Name = 'w3svc'; State = 'Stopped'; ST = 'Manual';     TestST = 'Disabled'; Expected = $false},
-        @{Name = 'w3svc'; State = 'Running'; ST = 'Manual';     TestST = 'Manual';   Expected = $true},
-        @{Name = 'w3svc'; State = 'Running'; ST = 'Manual';     TestST = 'Automatic';Expected = $false},
-        @{Name = 'w3svc'; State = 'Running'; ST = 'Automatic';  TestST = 'Manual';   Expected = $false},
-        @{Name = 'w3svc'; State = 'Running'; ST = 'Automatic';  TestST = 'Automatic';Expected = $true}
+        @{Name = $script:TestService; State = 'Stopped'; ST = 'Disabled';   TestST = 'Disabled'; Expected = $true},
+        @{Name = $script:TestService; State = 'Stopped'; ST = 'Automatic';  TestST = 'Disabled'; Expected = $false},
+        @{Name = $script:TestService; State = 'Stopped'; ST = 'Manual';     TestST = 'Disabled'; Expected = $false},
+        @{Name = $script:TestService; State = 'Running'; ST = 'Manual';     TestST = 'Manual';   Expected = $true},
+        @{Name = $script:TestService; State = 'Running'; ST = 'Manual';     TestST = 'Automatic';Expected = $false},
+        @{Name = $script:TestService; State = 'Running'; ST = 'Automatic';  TestST = 'Manual';   Expected = $false},
+        @{Name = $script:TestService; State = 'Running'; ST = 'Automatic';  TestST = 'Automatic';Expected = $true}
     )
 
     It 'Tests if TestTargetResource returns <Expected> when StartupType for <Name> is set to <ST> and desired is <TestST>' `
@@ -86,12 +92,12 @@ Describe -Name 'nService.TestTargetResource' -Tags 'UnitTests' -Fixture {
 
 Describe 'nService.SetTargetResource' -Tags 'UnitTests' {
   
-    BeforeAll {Set-Service 'w3svc' -StartupType Manual}
-    AfterAll  {Set-Service 'w3svc' -StartupType Manual}
+    BeforeAll {Set-Service $script:TestService -StartupType Manual}
+    AfterAll  {Set-Service $script:TestService -StartupType Manual}
 
     $TestCases = @(
-      @{Name = 'w3svc'; InitialState = 'Running'; FinalState = 'Stopped'},
-      @{Name = 'w3svc'; InitialState = 'Stopped'; FinalState = 'Running'}
+      @{Name = $script:TestService; InitialState = 'Running'; FinalState = 'Stopped'},
+      @{Name = $script:TestService; InitialState = 'Stopped'; FinalState = 'Running'}
     )
 
     It 'Tests if service <Name> is in set to state <FinalState> when it is initially <InitialState>' `
@@ -113,9 +119,9 @@ Describe 'nService.SetTargetResource' -Tags 'UnitTests' {
     }
 
     $TestCases = @(
-        @{Name = 'w3svc'; State = 'Stopped'; StartupType = 'Disabled';  StartMode = 'Disabled'},
-        @{Name = 'w3svc'; State = 'Running'; StartupType = 'Automatic'; StartMode = 'Auto'}
-        @{Name = 'w3svc'; State = 'Running'; StartupType = 'Manual';    StartMode = 'Manual'}
+        @{Name = $script:TestService; State = 'Stopped'; StartupType = 'Disabled';  StartMode = 'Disabled'},
+        @{Name = $script:TestService; State = 'Running'; StartupType = 'Automatic'; StartMode = 'Auto'}
+        @{Name = $script:TestService; State = 'Running'; StartupType = 'Manual';    StartMode = 'Manual'}
     )
 
     It 'Tests if StartupType for <Name> is set to <StartupType>' -TestCases $TestCases {
@@ -130,12 +136,12 @@ Describe 'nService.SetTargetResource' -Tags 'UnitTests' {
 }
 
 Describe 'nService.GetTargetResource' -Tags 'UnitTests' {
-    BeforeAll {Set-Service 'w3svc' -StartupType Manual}
-    AfterAll  {Set-Service 'w3svc' -StartupType Manual}
+    BeforeAll {Set-Service $script:TestService -StartupType Manual}
+    AfterAll  {Set-Service $script:TestService -StartupType Manual}
 
-    $service = Get-TargetResourceHelper -Name 'w3svc' -State Running
+    $service = Get-TargetResourceHelper -Name $script:TestService -State Running
 
-    $ExpectedResult = @{Name = 'w3svc'; State = 'Running'; StartupType = 'Manual'}
+    $ExpectedResult = @{Name = $script:TestService; State = 'Running'; StartupType = 'Manual'}
 
     $ExpectedResult.Keys | % {
         It "Get-TargetResourceHelper: Testing if $($_) is $($ExpectedResult[$_])" {
