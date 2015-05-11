@@ -20,69 +20,6 @@ class nService
 
   #endregion Properties
 
-  #region Helper Methods
-
-    <#
-    .Synopsis
-    Tests if startup type specified is valid, given the specified state
-    #>
-    hidden [void] ValidateStartupType()
-    {
-      if([string]::IsNullOrEmpty($this.StartupType)) {return}
-
-      if($this.State -eq 'Stopped')
-      {
-          if($this.StartupType -eq 'Automatic')
-          {
-              # State = Stopped conflicts with Automatic or Delayed
-              throw "Cannot stop service $($this.Name) and set it to start automatically"
-          }
-      }
-      else
-      {
-          if($this.StartupType -eq 'Disabled')
-          {
-              # State = Running conflicts with Disabled
-              throw "Cannot start service $($this.Name) and disable it"
-          }
-      }
-    }    
-
-    <#
-    .Synopsis
-    Gets a service corresponding to a name, throwing an error if not found
-    #>
-    hidden [System.ServiceProcess.ServiceController] GetService()
-    {
-        $svc=Get-Service $this.Name -ErrorAction Ignore
-
-        if($svc -eq $null)
-        {
-            throw "Service with name $($this.Name) not found"
-        }
-
-        return $svc
-    }
-
-    <#
-    .Synopsis
-    Gets a Win32_Service object corresponding to the name
-    #>
-    hidden [Management.ManagementObject] GetWmiService()
-    {
-        try
-        {
-            return new-object management.managementobject "Win32_Service.Name='$($this.Name)'"
-        }
-        catch
-        {
-            Write-Verbose "Error retrieving win32_service information for $($this.Name)"
-            throw
-        }
-    }
-   
-  #endregion Helper Methods
-
   #region DSC Methods
   [nService] Get()
   {
@@ -150,6 +87,69 @@ class nService
   }
 
   #endregion DSC Methods
+
+  #region Helper Methods
+
+    <#
+    .Synopsis
+    Tests if startup type specified is valid, given the specified state
+    #>
+    hidden [void] ValidateStartupType()
+    {
+      if([string]::IsNullOrEmpty($this.StartupType)) {return}
+
+      if($this.State -eq 'Stopped')
+      {
+          if($this.StartupType -eq 'Automatic')
+          {
+              # State = Stopped conflicts with Automatic or Delayed
+              throw "Cannot stop service $($this.Name) and set it to start automatically"
+          }
+      }
+      else
+      {
+          if($this.StartupType -eq 'Disabled')
+          {
+              # State = Running conflicts with Disabled
+              throw "Cannot start service $($this.Name) and disable it"
+          }
+      }
+    }    
+
+    <#
+    .Synopsis
+    Gets a service corresponding to a name, throwing an error if not found
+    #>
+    hidden [System.ServiceProcess.ServiceController] GetService()
+    {
+        $svc=Get-Service $this.Name -ErrorAction Ignore
+
+        if($svc -eq $null)
+        {
+            throw "Service with name $($this.Name) not found"
+        }
+
+        return $svc
+    }
+
+    <#
+    .Synopsis
+    Gets a Win32_Service object corresponding to the name
+    #>
+    hidden [Management.ManagementObject] GetWmiService()
+    {
+        try
+        {
+            return new-object management.managementobject "Win32_Service.Name='$($this.Name)'"
+        }
+        catch
+        {
+            Write-Verbose "Error retrieving win32_service information for $($this.Name)"
+            throw
+        }
+    }
+   
+  #endregion Helper Methods
 
 }
 
