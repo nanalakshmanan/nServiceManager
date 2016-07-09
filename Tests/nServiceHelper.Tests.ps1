@@ -2,7 +2,7 @@
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.", ".")
 . "$here\$sut"
 
-$script:TestService = 'w3svc'
+$script:TestService = 'wuauserv'
 if ((Get-CimInstance win32_operatingsystem).ProductType -eq 1)
 {
   $script:TestService = 'HomeGroupListener'

@@ -10,11 +10,11 @@ class nService
   [DscProperty(NotConfigurable)]
   [string] $DisplayName
 
-#  [ValidateSet('Running', 'Stopped')]
+  [ValidateSet('Running', 'Stopped')]
   [DscProperty(Mandatory)]
   [string] $State
 
- # [ValidateSet('Automatic', 'Manual', 'Disabled')]
+  [ValidateSet('Automatic', 'Manual', 'Disabled')]
   [DscProperty()]
   [string] $StartupType 
 
